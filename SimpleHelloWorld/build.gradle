@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+}
+
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    com { // comBkAdd
+        java {
+            srcDir 'src/com'
+        }
+    }
+}
+//bootRun {
+//    jvmArgs "-D" + "${project.buildDir}" + "/resources/jar/agent.jar"
+//}
+
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+}
+
+test {
+    useJUnitPlatform()
+}

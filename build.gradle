@@ -1,0 +1,92 @@
+// shared modules
+def dependencyVersions = [
+		'org.springframework.boot:spring-boot-starter:2.1.1',
+		'org.springframework.boot:spring-boot-starter-test:2.1.1',
+		'org.springframework.boot:spring-boot-starter-web:2.1.1',
+		'io.reactivex.rxjava2:rxjava:2.2.13'
+]
+
+buildscript {
+//	소스코드를 빌드하고 실행하는데 필요한 글로벌 레벨의 depencies & repositories 설정
+//	build.gradle 파일 그 자체를 위한 것. Package Manager / Docker file / spirng-boot-gradle-plugin과 같이 빌드에 필요한 의존성 추가
+//	따라서 소스코드 컴파일과 같은 빌드 작업을 시작하기 전에, 빌드 시스템 준비 단계에서 제일 먼저 실행되는 블록
+//	결국 빌드 자체를 위한 의존성 & 레포를 설정하는 곳
+	repositories {
+		maven { url 'https://plugins.gradle.org/m2/' }
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'me.champeau.gradle:jmh-gradle-plugin:0.5.3'
+		classpath 'net.ltgt.gradle:gradle-apt-plugin:0.15'
+		classpath 'net.researchgate:gradle-release:2.6.0'
+		classpath 'net.rdrei.android.buildtimetracker:gradle-plugin:0.11.+'
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.2.4.RELEASE'
+		classpath 'se.transmode.gradle:gradle-docker:1.2'
+		classpath 'com.github.marceloemanoel:gradle-migrations:0.2.1'
+	}
+}
+
+// Print the build time summary to the console
+apply plugin: "build-time-tracker"
+
+buildtimetracker {
+	reporters {
+		summary {
+			ordered true
+		}
+	}
+}
+
+subprojects {
+	group 'com.bkkang.testground'
+
+	task allDeps(type: DependencyReportTask) {}
+
+	repositories {
+		maven { url 'https://repo.springsource.org/milestone/' }
+		mavenCentral()
+	}
+}
+
+allprojects {
+	apply plugin: 'java'
+	apply plugin: 'java-library'
+	apply plugin: 'idea'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'maven-publish'
+//	apply plugin: 'net.ltgt.apt'
+//	apply plugin: 'net.ltgt.apt-idea'
+//	apply plugin: 'net.researchgate.release'
+//	apply plugin: 'checkstyle'
+//	apply plugin: 'jacoco'
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	dependencyManagement {
+		dependencies {
+			dependencyVersions.each { dependency it }
+		}
+	}
+
+
+	test {
+		if (JavaVersion.current() != JavaVersion.VERSION_1_8) {
+			jvmArgs('--add-opens', 'java.base/java.lang=ALL-UNNAMED')
+		}
+	}
+}
+
+//plugins {
+//	id 'org.springframework.boot' version '2.6.5'
+//	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+//	id 'java'
+//}
+
+
+//dependencies {
+//	implementation 'org.springframework.boot:spring-boot-starter'
+//	'io.reactivex.rxjava2:rxjava:2.2.13',
+//	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//}
+

@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+}
+// gradle implement dependency guide
+// https://stackoverflow.com/questions/20700053/how-to-add-local-jar-file-dependency-to-build-gradle-file
+configurations {
+    javaAgent
+    extraLibs
+}
+
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes "Premain-Class": "JavaAgent"
+    }
+    from {
+        configurations.extraLibs.collect { it.isDirectory()? it: zipTree(it) }
+    }
+
+//    // https://ink1234.tistory.com/12
+//    from {
+//        configurations {
+//            comp
+//        }
+//        configurations.extracompile.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.javassist/javassist
+    extraLibs 'org.javassist:javassist:3.26.0-GA'
+    configurations.implementation.extendsFrom(configurations.extraLibs)
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+}
+
+//task copyAppOpticsConfig(type: Copy) {
+//    from "$buildDir/resources/main/javaagent.json"
+//    into "${project.buildDir}/libs"
+//}
+test {
+    useJUnitPlatform()
+}
+
+//tasks.named('jar') {
+//    manifest {
+//        attributes('Premain-Class': 'JavaAgent')
+//    }
+//    from {
+//        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+//}
+
+//jar {
+//    manifest {
+//        attributes "Premain-Class": "JavaAgent"
+//    }
+//    // https://ink1234.tistory.com/12
+//    from {
+//        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+//    }
+//}

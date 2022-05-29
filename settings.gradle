@@ -1,0 +1,4 @@
+rootProject.name = 'playground'
+include 'testground'
+include 'agent'
+include 'SimpleHelloWorld'
